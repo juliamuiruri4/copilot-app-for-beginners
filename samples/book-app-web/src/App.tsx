@@ -54,7 +54,7 @@ export default function App() {
         </p>
       </section>
 
-      <ReadingStats books={books} />
+      <ReadingStats books={filteredBooks} />
 
       <BookFilters
         genres={genres}

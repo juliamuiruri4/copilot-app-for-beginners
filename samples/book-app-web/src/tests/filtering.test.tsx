@@ -1,5 +1,7 @@
+import React from "react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { filterBooks, type BookFiltersState } from "../App";
+import App, { filterBooks, type BookFiltersState } from "../App";
 import { books } from "../data/books";
 
 const defaultFilters: BookFiltersState = {
@@ -26,5 +28,19 @@ describe("filterBooks", () => {
     });
 
     expect(results.map((book) => book.title)).toEqual(["The Night Circus"]);
+  });
+
+  it("updates the unread count for the books shown after filtering", () => {
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Genre"), { target: { value: "Fantasy" } });
+    fireEvent.change(screen.getByLabelText("Status"), { target: { value: "unread" } });
+
+    expect(screen.getByRole("heading", { name: "1 books shown" })).toBeTruthy();
+    expect(screen.getAllByRole("article")).toHaveLength(1);
+
+    const stats = screen.getByRole("region", { name: /reading stats/i });
+    expect(within(stats).getByLabelText("Total: 1")).toBeTruthy();
+    expect(within(stats).getByLabelText("Unread: 1")).toBeTruthy();
   });
 });
